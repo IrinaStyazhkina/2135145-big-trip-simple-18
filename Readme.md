@@ -1,7 +1,7 @@
 # Проект «Большое путешествие (простой)»
 
 * Студент: [Irina Styazhkina](https://up.htmlacademy.ru/ecmascript/18/user/2135145).
-* Наставник: Алексей Зольников.
+* Наставник: [Алексей Зольников](https://htmlacademy.ru/profile/id870391).
 
 ---
 
