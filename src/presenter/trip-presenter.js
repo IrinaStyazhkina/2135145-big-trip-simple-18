@@ -7,15 +7,18 @@ import SortView from '../view/sort-view.js';
 export default class TripPresenter {
   pointListView = new PointListView();
 
-  init = (contentContainer) => {
+  init = (contentContainer, pointsModel, destinationsModel) => {
     this.contentContainer = contentContainer;
+    this.pointsModel = pointsModel;
+    this.destinationsModel = destinationsModel;
+    this.points = [...this.pointsModel.getPoints()];
 
     render(new SortView(), this.contentContainer);
 
-    render(new EditFormView(), this.pointListView.getElement());
+    render(new EditFormView(this.points[0], this.destinationsModel.getDestinations(), this.destinationsModel.getDestinationById(this.points[0].destination) ), this.pointListView.getElement());
 
-    for (let i = 0; i < 3; i += 1) {
-      render(new PointItemView(), this.pointListView.getElement());
+    for (let i = 0; i < this.points.length; i += 1) {
+      render(new PointItemView(this.points[i], this.destinationsModel.getDestinationById(this.points[i].destination)), this.pointListView.getElement());
     }
     render(this.pointListView, this.contentContainer);
   };
