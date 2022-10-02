@@ -3,6 +3,7 @@ import {render} from '../render.js';
 import EditFormView from '../view/edit-form-view.js';
 import PointItemView from '../view/point-item-view.js';
 import SortView from '../view/sort-view.js';
+import NoPointView from '../view/no-point-view.js';
 
 export default class TripPresenter {
   #pointListView = new PointListView();
@@ -11,20 +12,16 @@ export default class TripPresenter {
   #destinationsModel = null;
   #points = null;
 
-  init = (contentContainer, pointsModel, destinationsModel) => {
+  constructor(contentContainer, pointsModel, destinationsModel) {
     this.#contentContainer = contentContainer;
     this.#pointsModel = pointsModel;
     this.#destinationsModel = destinationsModel;
-    this.#points = [...this.#pointsModel.points];
+  }
 
+  init = () => {
     render(new SortView(), this.#contentContainer);
-
-    // render(new EditFormView(this.#points[0], this.#destinationsModel.destinations, this.#destinationsModel.getDestinationById(this.#points[0].destination) ), this.#pointListView.element);
-
-    for (let i = 0; i < this.#points.length; i += 1) {
-      this.#renderPointItem(this.#points[i]);
-    }
-    render(this.#pointListView, this.#contentContainer);
+    this.#points = [...this.#pointsModel.points];
+    this.#renderPointList();
   };
 
   #renderPointItem = (point) => {
@@ -64,5 +61,16 @@ export default class TripPresenter {
     });
 
     render(pointItemView, this.#pointListView.element);
+  };
+
+  #renderPointList = () => {
+    if (this.#points === null || this.#points.length === 0) {
+      render(new NoPointView(), this.#contentContainer);
+    } else {
+      for (let i = 0; i < this.#points.length; i += 1) {
+        this.#renderPointItem(this.#points[i]);
+      }
+      render(this.#pointListView, this.#contentContainer);
+    }
   };
 }

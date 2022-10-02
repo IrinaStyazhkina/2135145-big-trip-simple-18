@@ -6,10 +6,10 @@ import DestinationsModel from './model/destinations-model.js';
 
 const filtersContainer = document.querySelector('.trip-controls__filters');
 const tripContainer = document.querySelector('.trip-events');
-const tripPresenter = new TripPresenter();
 const pointsModel = new PointsModel();
 const destinationsModel = new DestinationsModel();
+const tripPresenter = new TripPresenter(tripContainer, pointsModel, destinationsModel);
 render(new FiltersView(), filtersContainer);
 
-tripPresenter.init(tripContainer, pointsModel, destinationsModel);
+tripPresenter.init();
 
