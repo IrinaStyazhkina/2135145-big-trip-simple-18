@@ -63,23 +63,27 @@ const createPointItemTemplate = (point, destination) => {
 };
 
 export default class PointItemView {
+  #element = null;
+  #point = null;
+  #destination = null;
+
   constructor(point, destination) {
-    this.point = point;
-    this.destination = destination;
+    this.#point = point;
+    this.#destination = destination;
   }
 
-  getTemplate() {
-    return createPointItemTemplate(this.point, this.destination);
+  get template() {
+    return createPointItemTemplate(this.#point, this.#destination);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
