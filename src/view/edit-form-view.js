@@ -1,7 +1,19 @@
-import {createElement} from '../render.js';
 import {getAllOffersForType, TYPES} from '../mock/offers.js';
-import {capitalizeFirstLetter, getDateWithTimeWithSlash} from '../utils/utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import dayjs from 'dayjs';
+import {getAllDestinations} from '../mock/destinations.js';
+import {capitalizeFirstLetter, getRandomFromRange} from '../utils/common.js';
+import {getDateWithTimeWithSlash} from '../utils/time-formatter.js';
 
+const BLANK_POINT = {
+  'basePrice': 0,
+  'dateFrom': dayjs(),
+  'dateTo': dayjs(),
+  'destination': getAllDestinations()[0],
+  'id': getRandomFromRange(1, 50),
+  'offers': [],
+  'type': TYPES[0],
+};
 
 const createDestinationTemplate = ({name, description}) => (
   `<section class="event__section  event__section--destination">
@@ -123,13 +135,13 @@ const createEditFormViewTemplate = (point, destinations, currentDestination) => 
   </form>`);
 };
 
-export default class EditFormView {
-  #element = null;
+export default class EditFormView extends AbstractView {
   #point = null;
   #destinations = null;
   #currentDestination = null;
 
-  constructor(point, destinations, currentDestination) {
+  constructor(point = BLANK_POINT, destinations, currentDestination = destinations[0]) {
+    super();
     this.#point = point;
     this.#destinations = destinations;
     this.#currentDestination = currentDestination;
@@ -139,14 +151,23 @@ export default class EditFormView {
     return createEditFormViewTemplate(this.#point, this.#destinations, this.#currentDestination);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  setCloseClickHandler = (callback) => {
+    this._callback.closeClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeButtonClickHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
+
+  #closeButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeClick();
+  };
 }

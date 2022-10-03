@@ -1,5 +1,6 @@
-import {createElement} from '../render.js';
-import {getDateWithSeparator, getDateWithTime, getMonthAndDay, getTime} from '../utils/utils.js';
+import {getDateWithSeparator, getDateWithTime, getMonthAndDay, getTime} from '../utils/time-formatter.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {capitalizeFirstLetter} from '../utils/common.js';
 
 const createOfferTemplate = (offer) => (
   `<li class="event__offer">
@@ -34,7 +35,7 @@ const createPriceTemplate = (price) => (
 
 const createPointItemTemplate = (point, destination) => {
 
-  const {dateFrom, dateTo, basePrice} = point;
+  const {dateFrom, dateTo, basePrice, type} = point;
   const dayAndMonth = getMonthAndDay(dateFrom);
   const startTime = getTime(dateFrom);
   const endTime = getTime(dateTo);
@@ -48,9 +49,9 @@ const createPointItemTemplate = (point, destination) => {
     <div class="event">
       <time class="event__date" datetime=${dateWithSeparator}>${dayAndMonth}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/flight.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">Flight ${name}</h3>
+      <h3 class="event__title">${capitalizeFirstLetter(type)} ${name}</h3>
       ${createEventsScheduleTemplate(startDate, startTime, endDate, endTime)}
       ${createPriceTemplate(basePrice)}
       <h4 class="visually-hidden">Offers:</h4>
@@ -62,12 +63,12 @@ const createPointItemTemplate = (point, destination) => {
   </li>`);
 };
 
-export default class PointItemView {
-  #element = null;
+export default class PointItemView extends AbstractView{
   #point = null;
   #destination = null;
 
   constructor(point, destination) {
+    super();
     this.#point = point;
     this.#destination = destination;
   }
@@ -76,14 +77,13 @@ export default class PointItemView {
     return createPointItemTemplate(this.#point, this.#destination);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
 }
