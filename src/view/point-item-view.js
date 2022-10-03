@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {getDateWithSeparator, getDateWithTime, getMonthAndDay, getTime} from '../utils/utils.js';
+import {getDateWithSeparator, getDateWithTime, getMonthAndDay, getTime} from '../utils/time-formatter.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createOfferTemplate = (offer) => (
   `<li class="event__offer">
@@ -62,12 +62,12 @@ const createPointItemTemplate = (point, destination) => {
   </li>`);
 };
 
-export default class PointItemView {
-  #element = null;
+export default class PointItemView extends AbstractView{
   #point = null;
   #destination = null;
 
   constructor(point, destination) {
+    super();
     this.#point = point;
     this.#destination = destination;
   }
@@ -76,14 +76,13 @@ export default class PointItemView {
     return createPointItemTemplate(this.#point, this.#destination);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
 }

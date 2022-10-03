@@ -1,9 +1,9 @@
 import PointListView from '../view/point-list-view.js';
-import {render} from '../render.js';
 import EditFormView from '../view/edit-form-view.js';
 import PointItemView from '../view/point-item-view.js';
 import SortView from '../view/sort-view.js';
 import NoPointView from '../view/no-point-view.js';
+import {render, replace} from '../framework/render.js';
 
 export default class TripPresenter {
   #pointListView = new PointListView();
@@ -29,11 +29,11 @@ export default class TripPresenter {
     const editFormView = new EditFormView(point, this.#destinationsModel.destinations, this.#destinationsModel.getDestinationById(point.destination));
 
     const replacePointViewToForm = () => {
-      this.#pointListView.element.replaceChild(editFormView.element, pointItemView.element);
+      replace(editFormView, pointItemView);
     };
 
     const replaceFormToPointView = () => {
-      this.#pointListView.element.replaceChild(pointItemView.element, editFormView.element);
+      replace(pointItemView, editFormView);
     };
 
     const onEscKeyDown = (evt) => {
@@ -44,18 +44,17 @@ export default class TripPresenter {
       }
     };
 
-    pointItemView.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointItemView.setEditClickHandler(() => {
       replacePointViewToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    editFormView.element.addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    editFormView.setFormSubmitHandler(() => {
       replaceFormToPointView();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    editFormView.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    editFormView.setCloseClickHandler(() => {
       replaceFormToPointView();
       document.removeEventListener('keydown', onEscKeyDown);
     });
